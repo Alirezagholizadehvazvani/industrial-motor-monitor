@@ -1,42 +1,67 @@
 # Industrial Motor Monitor
 
-This is the next phase of the [Motor Health Monitor](https://github.com/Alirezagholizadehvazvani/motor-health-monitor) project.
+Bench-verified prototype. Firmware pending import. Not yet validated on the real panel.
 
-In Stage A, the detection logic and architecture were developed and validated in pure software simulation.  
-This repository focuses on moving that same logic onto real hardware for industrial pump protection.
+ESP32-based protection monitor for a 3-phase submersible drainage pump at Jahan Pump Co. It measures three phase voltages and three phase currents and opens the contactor coil circuit on a fault. A trip latches until the manual reset button is pressed.
 
-## Goal
+Not a certified protection device. See [docs/safety.md](docs/safety.md).
 
-Build a practical monitoring system that can detect:
+## Target equipment
 
-- Phase imbalance / single-phasing
-- Dry-running conditions
+| Item | Detail |
+|------|--------|
+| Pumps | TYPE 4 submersible drainage pumps, 10-30 A |
+| Contactor | Hyundai HGC 25 |
+| Manual motor starter | HMMS-32K |
 
-on real 3-phase motors, using ESP32 and current sensors.
+The monitor is intended to work alongside the existing HGC 25 and HMMS-32K protection, not replace it.
 
-## Relation to Stage A
+## Hardware
 
-The previous repository established:
+| Function | Part | Connection |
+|----------|------|-----------|
+| Controller | ESP32-WROOM-32 | |
+| Voltage sensing | 3x ZMPT101B | GPIO35, GPIO32, GPIO33 |
+| Current sensing | 3x SCT-013 | ADS1115 AIN0-2, I2C 0x48 |
+| Display | SSD1306 0.96 in OLED | SDA GPIO21, SCL GPIO22 |
+| Trip output | Opto-isolated relay | GPIO25 |
+| Reset | Push button | GPIO26 |
 
-- A clean Hardware Abstraction Layer
-- Fault detection logic
-- Simulation environment
+Details and open items: [docs/hardware.md](docs/hardware.md).
 
-This phase keeps the same software architecture and replaces the simulated sensor with real current measurements.
+## Protection parameters
 
-## Planned Components
+From the existing firmware. To be re-confirmed against the source once it is imported.
 
-- ESP32
-- SCT-013 current sensors
-- Signal conditioning
-- MQTT communication
-- Simple monitoring dashboard
+| Parameter | Value |
+|-----------|-------|
+| Over-current threshold | 32 A |
+| Voltage window | 180 V to 250 V |
+| Startup inrush delay | 4 s |
+| Reset | Manual only, no auto-restart |
 
-## Current Status
+These values have not been checked against the pump nameplate or measured inrush.
 
-This repository is in the early stage of hardware integration and system design.
+## Status
 
-More details, code, and documentation will be added as the work progresses.
+| Item | State |
+|------|-------|
+| Breadboard hardware | Built, checked with a multimeter and live tests on the bench |
+| Firmware | Written, not yet in this repository (`firmware/src/main.cpp` is a placeholder) |
+| Real panel | Not connected, not validated |
+| Requirements specification | Rev A draft in `docs/` |
+| Open risks | Listed in the specification and in `docs/safety.md` |
+
+## Repository
+
+| Path | Content |
+|------|---------|
+| `docs/requirements-specification.pdf` | Requirements and risk register, Rev A |
+| `docs/hardware.md` | Parts, pin map, sensing chains |
+| `docs/assembly-notes.md` | Build order, problems, verification |
+| `docs/safety.md` | Hazards, current limits, open items |
+| `firmware/` | PlatformIO project (placeholder) |
+| `hardware/photos/` | Build photos (to be added) |
 
 ## License
 

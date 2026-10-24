@@ -33,10 +33,10 @@ The distinction between implemented features and future work is important: listi
 
 | Condition or feature | Status |
 |---|---|
-| Three-phase current measurement | Implemented in the prototype |
-| Phase-voltage measurement | Implemented in the prototype |
-| Overcurrent detection | Implemented protection logic |
-| Under/overvoltage detection | Implemented protection logic |
+| Three-phase current measurement | Implemented in the prototype. Calibration against a reference is not yet documented |
+| Phase-voltage measurement | Implemented in the prototype. Scaling is provisional, see Known issues |
+| Overcurrent detection | Implemented in code. Startup window behaviour needs rework, see Known issues |
+| Under/overvoltage detection | Implemented in code, not verified. See Known issues |
 | OLED operating and trip indications | Implemented |
 | LED status indication | Implemented |
 | Manual reset input | Implemented |
@@ -71,9 +71,9 @@ See [`docs/hardware.md`](docs/hardware.md) for additional hardware information a
 
 The firmware acquires sensor readings, evaluates the implemented protection conditions, updates status indications, and manages the prototype's trip and reset behavior.
 
-The configured startup delay is **5 seconds**. This is a startup behavior, not a measured fault-response time.
+The configured startup delay is **5 seconds**. It starts when the monitor boots or is reset, not when the motor starts (see Known issues). It is a startup behavior, not a measured fault-response time.
 
-The firmware performs multiple ADC reads and uses a median-based sampling process, followed by a delay between processing passes. Consequently, actual fault-response time depends on the complete execution path and fault conditions. **End-to-end trip time has not yet been measured and documented**, so this README makes no claim that the system trips within a specific number of electrical cycles or within a verified time limit.
+Each processing pass reads the ADS1115 current channels repeatedly, takes a median over three passes, and requires an over-current condition to persist for 500 ms before it trips. The fault-response time therefore depends on the complete execution path. **End-to-end trip time has not yet been measured and documented**, so this README makes no claim that the system trips within a specific number of electrical cycles or within a verified time limit.
 
 A timing result should be added only after a controlled test records the interval between fault injection and the corresponding trip output, including the test conditions and measurement method.
 
@@ -93,7 +93,8 @@ industrial-motor-monitor/
 │   ├── Pump_Protection_Project_Status.pdf
 │   ├── Pump_Protection_Shopping_List.pdf
 │   └── schematics/
-│       ├── ESP32 Mains Monitoring Circuit Schematic.png
+│       ├── monitor-circuit.svg
+│       ├── monitor-circuit.png
 │       └── panel-illustration.svg
 ├── firmware/
 │   ├── esp32jp/
@@ -106,4 +107,42 @@ industrial-motor-monitor/
     └── bom/
 ```
 
-The repository includes firmware, hardware documentation, photographs, bill
+The repository includes firmware, hardware documentation, photographs, schematics and illustrations, early project reports, and a bill-of-materials folder that is not yet populated.
+
+## Schematics
+
+![Monitor circuit](docs/schematics/monitor-circuit.png)
+
+`docs/schematics/monitor-circuit.svg` is the editable source. Both schematics in this repository are illustrations drawn for the project, not company documents. Assumptions that still need confirming against the build are marked [A] in the drawing. `panel-illustration.svg` shows a typical DOL starter panel with the monitor's connection points.
+
+## Known issues
+
+Based on `firmware/esp32jp/esp32jp.ino` as committed. None of these is fixed yet.
+
+| Issue | Effect |
+|---|---|
+| The startup window starts at boot or reset, not when the motor starts | A motor started later can trip on its inrush current |
+| The voltage reading includes the sensor's DC bias and uses a provisional scale factor | Under-voltage and phase loss would not be detected reliably |
+| The relay is set to allow the contactor before the sensors are initialised, and a failed initialisation halts the program in that state. No watchdog is enabled | The motor can run unprotected after an initialisation failure |
+| One compile-time current limit (30 A) | The limit does not follow the pump's rating |
+| Voltage trips use single readings with no debounce | A noise spike can trip the relay |
+| The OLED shows TRIPPED without the cause | The trip cause is not visible on the display |
+
+## Testing
+
+Measured test results are not yet documented in this repository. A test log with measured values has not been written yet. `docs/challenges/build-challenges-and-lessons.md` describes the staged testing approach.
+
+## Safety notes
+
+- This system is an additional protection layer. It does not replace the existing motor starter's protection or thermal overload.
+- The relay must only interrupt the contactor-coil control circuit, never the main power path.
+- Isolate and verify dead before working on mains wiring, and use lock-out / tag-out.
+- Never leave a CT secondary open while clamped on a live conductor.
+- Do not connect the prototype to a live panel without approval from the equipment owner and review by qualified personnel.
+- This is a prototype, not a certified protection device.
+
+See also [`docs/safety.md`](docs/safety.md).
+
+## License
+
+MIT, see [`LICENSE`](LICENSE).

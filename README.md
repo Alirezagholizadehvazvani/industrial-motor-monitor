@@ -107,7 +107,6 @@ industrial-motor-monitor/
 │   ├── Pump_Protection_Shopping_List.pdf
 │   └── schematics/
 │       ├── monitor-circuit.svg
-│       ├── monitor-circuit.png
 │       └── panel-illustration.svg
 ├── firmware/
 │   ├── main.prototype/
@@ -121,9 +120,9 @@ The repository includes firmware, hardware documentation, photographs, schematic
 
 ## Schematics
 
-![Monitor circuit](docs/schematics/monitor-circuit.png)
+![Monitor circuit](docs/schematics/monitor-circuit.svg)
 
-`docs/schematics/monitor-circuit.svg` is the editable source. Both schematics in this repository are illustrations drawn for the project, not company documents. Assumptions that still need confirming against the build are marked `[A]` in the drawing. `panel-illustration.svg` shows a typical DOL starter panel with the monitor's connection points.
+`docs/schematics/monitor-circuit.svg` is the schematic source and is shown above. Both schematics in this repository are illustrations drawn for the project, not company documents. Assumptions that still need confirming against the build are marked `[A]` in the drawing. `panel-illustration.svg` shows a typical DOL starter panel with the monitor's connection points.
 
 ## Known Issues and Limitations
 

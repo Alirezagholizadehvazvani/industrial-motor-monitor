@@ -65,7 +65,7 @@ The prototype uses the following main components:
 
 The exact measurement accuracy and suitability of each module depend on its configuration, calibration, electrical isolation, and operating conditions. Component specifications alone do not establish the safety or accuracy of the complete system.
 
-See - [Requirements Specification (PDF)](docs/requirements-specification.pdf) for additional hardware information and [`docs/assembly-notes.md`](docs/assembly-notes.md) for the available assembly documentation.
+See [`docs/hardware.md`](docs/hardware.md) for additional hardware information and [`docs/assembly-notes.md`](docs/assembly-notes.md) for the available assembly documentation.
 
 ## Firmware and Response Time
 
@@ -127,7 +127,20 @@ The repository includes firmware, hardware documentation, photographs, schematic
 
 ## Known Issues and Limitations
 
-- The voltage-sensing scale factor has not yet been calibrated against a suitable reference.
+Based on the committed firmware, `firmware/main.prototype/main.prototype.ino`.
+
+| Issue | Effect |
+|---|---|
+| The voltage scale factor is not calibrated | Voltage readings are not volts until calibrated, so the 150 V, 280 V and 80 V levels are unvalidated |
+| The trip latch is held in RAM | A power cycle or watchdog reboot clears it and re-arms the relay |
+| Limits are compile-time constants, including the pump's full-load current | A different pump needs the constant changed and the board re-flashed |
+| Voltage and imbalance trips have no explicit confirmation time | Only the median over three passes filters short disturbances |
+| Events go to the serial port only | Faults cannot be reviewed without a connected host |
+| The watchdog call is written for ESP32 Arduino core 2.x | A build on core 3.x may not compile |
+| The 150 % limit has no documented basis | The limit needs a stated rationale before any use |
+
+General limitations:
+
 - Current and voltage measurement accuracy has not yet been documented through reference-based testing.
 - Protection thresholds have not all been validated experimentally.
 - End-to-end fault detection and trip response time have not yet been measured and documented.
@@ -135,3 +148,22 @@ The repository includes firmware, hardware documentation, photographs, schematic
 - The `platformio.ini` file is currently a placeholder; a complete PlatformIO build configuration and dependency list have not yet been established.
 
 This repository documents a personal engineering prototype and its development status. It does not establish certified protective performance or suitability for deployment in an industrial installation.
+
+## Testing
+
+Measured test results are not yet documented in this repository. A test log with measured values has not been written yet. `docs/challenges/build-challenges-and-lessons.md` describes the staged testing approach.
+
+## Safety notes
+
+- This system is an additional protection layer. It does not replace the existing motor starter's protection or thermal overload.
+- The relay must only interrupt the contactor-coil control circuit, never the main power path.
+- Isolate and verify dead before working on mains wiring, and use lock-out / tag-out.
+- Never leave a CT secondary open while clamped on a live conductor.
+- Do not connect the prototype to a live panel without approval from the equipment owner and review by qualified personnel.
+- This is a prototype, not a certified protection device.
+
+See also [`docs/safety.md`](docs/safety.md).
+
+## License
+
+MIT, see [`LICENSE`](LICENSE).

@@ -65,7 +65,7 @@ The prototype uses the following main components:
 
 The exact measurement accuracy and suitability of each module depend on its configuration, calibration, electrical isolation, and operating conditions. Component specifications alone do not establish the safety or accuracy of the complete system.
 
-See [`docs/hardware.md`](docs/hardware.md) for additional hardware information and [`docs/assembly-notes.md`](docs/assembly-notes.md) for the available assembly documentation.
+See - [Requirements Specification (PDF)](docs/requirements-specification.pdf) for additional hardware information and [`docs/assembly-notes.md`](docs/assembly-notes.md) for the available assembly documentation.
 
 ## Firmware and Response Time
 

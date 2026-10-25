@@ -34,15 +34,15 @@ The distinction between implemented features and future work is important: listi
 | Condition or feature | Status |
 |---|---|
 | Three-phase current measurement | Implemented in the prototype. Calibration against a reference is not yet documented |
-| Phase-voltage measurement | Implemented in the prototype. Scaling is provisional, see Known issues |
-| Overcurrent detection | Implemented in code. Startup window behaviour needs rework, see Known issues |
-| Under/overvoltage detection | Implemented in code, not verified. See Known issues |
-| OLED operating and trip indications | Implemented |
+| Phase-voltage measurement | Implemented in the prototype. The scale factor is not yet calibrated, see Known issues |
+| Overcurrent detection | Implemented in code. Limit is 150 % of a per-pump full-load current set in the source |
+| Under/overvoltage detection | Implemented in code, not verified. Levels depend on the uncalibrated scale |
+| OLED operating and trip indications | Implemented, including the trip cause |
 | LED status indication | Implemented |
 | Manual reset input | Implemented |
-| Relay output for the contactor-coil control circuit | Prototype interface implemented |
-| Phase-loss detection | Not implemented as a validated protection function |
-| Phase-imbalance detection | Not implemented as a validated protection function |
+| Relay output for the contactor-coil control circuit | Prototype interface implemented. The relay stays open until start-up checks pass, and a watchdog is armed |
+| Phase-loss detection | Implemented in code, thresholds not validated |
+| Phase-imbalance detection | Implemented in code, threshold not validated |
 | Measured end-to-end fault trip time | Not yet established by a documented timing test |
 | Certified protection performance | Outside the project's scope |
 
@@ -71,9 +71,13 @@ See [`docs/hardware.md`](docs/hardware.md) for additional hardware information a
 
 The firmware acquires sensor readings, evaluates the implemented protection conditions, updates status indications, and manages the prototype's trip and reset behavior.
 
-The configured startup delay is **5 seconds**. It starts when the monitor boots or is reset, not when the motor starts (see Known issues). It is a startup behavior, not a measured fault-response time.
+The startup window is **5 seconds**. It opens when the firmware detects a motor start (a phase current above 0.5 A after the motor was off) and inhibits the over-current and imbalance checks only. It is a startup behavior, not a measured fault-response time.
 
-Each processing pass reads the ADS1115 current channels repeatedly, takes a median over three passes, and requires an over-current condition to persist for 500 ms before it trips. The fault-response time therefore depends on the complete execution path. **End-to-end trip time has not yet been measured and documented**, so this README makes no claim that the system trips within a specific number of electrical cycles or within a verified time limit.
+The over-current limit is 150 % of `PUMP_FLA`, the pump's full-load current, which is set in the source for each pump (the committed value is 10 A, so 15 A). The voltage window is 150 V to 280 V, phase loss is a phase below 80 V while another is present, and imbalance is a phase current more than 25 % from the average. Voltage and current values pass through a median over three passes. An over-current condition must persist for 500 ms. The voltage scale factor is still marked "calibrate later" in the code, so these voltage levels have not been validated.
+
+On every trip the cause is shown on the OLED and written to the serial port with a timestamp. The relay is held open until the display and ADC initialise, and an 8 s watchdog is armed after that.
+
+Each processing pass reads the ADS1115 current channels repeatedly. By inspection of the code, a trip needs several passes of at least 0.3 s each, so the response is of the order of a second or more. **End-to-end trip time has not yet been measured and documented**, so this README makes no claim that the system trips within a specific number of electrical cycles or within a verified time limit.
 
 A timing result should be added only after a controlled test records the interval between fault injection and the corresponding trip output, including the test conditions and measurement method.
 
@@ -103,11 +107,10 @@ industrial-motor-monitor/
 │   │   └── main.cpp
 │   └── platformio.ini
 └── hardware/
-    ├── photos/
-    └── bom/
+    └── photos/
 ```
 
-The repository includes firmware, hardware documentation, photographs, schematics and illustrations, early project reports, and a bill-of-materials folder that is not yet populated.
+The repository includes firmware, hardware documentation, photographs, schematics and illustrations, and early project reports. A bill of materials has not been written yet.
 
 ## Schematics
 
@@ -117,16 +120,17 @@ The repository includes firmware, hardware documentation, photographs, schematic
 
 ## Known issues
 
-Based on `firmware/esp32jp/esp32jp.ino` as committed. None of these is fixed yet.
+Based on `firmware/esp32jp/esp32jp.ino` as committed.
 
 | Issue | Effect |
 |---|---|
-| The startup window starts at boot or reset, not when the motor starts | A motor started later can trip on its inrush current |
-| The voltage reading includes the sensor's DC bias and uses a provisional scale factor | Under-voltage and phase loss would not be detected reliably |
-| The relay is set to allow the contactor before the sensors are initialised, and a failed initialisation halts the program in that state. No watchdog is enabled | The motor can run unprotected after an initialisation failure |
-| One compile-time current limit (30 A) | The limit does not follow the pump's rating |
-| Voltage trips use single readings with no debounce | A noise spike can trip the relay |
-| The OLED shows TRIPPED without the cause | The trip cause is not visible on the display |
+| The voltage scale factor is not calibrated | Voltage readings are not volts until calibrated, so the 150 V, 280 V and 80 V levels are unvalidated |
+| The trip latch is held in RAM | A power cycle or watchdog reboot clears it and re-arms the relay |
+| Limits are compile-time constants, including the pump's full-load current | A different pump needs the constant changed and the board re-flashed |
+| Voltage and imbalance trips have no explicit confirmation time | Only the median over three passes filters short disturbances |
+| Events go to the serial port only | Faults cannot be reviewed without a connected host |
+| The watchdog call is written for ESP32 Arduino core 2.x | A build on core 3.x may not compile |
+| The 150 % limit has no documented basis | The limit needs a stated rationale before any use |
 
 ## Testing
 

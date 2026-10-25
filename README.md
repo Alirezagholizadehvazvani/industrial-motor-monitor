@@ -144,7 +144,6 @@ General limitations:
 - Protection thresholds have not all been validated experimentally.
 - End-to-end fault detection and trip response time have not yet been measured and documented.
 - The firmware and hardware have not been certified as a motor-protection system.
-- The `platformio.ini` file is currently a placeholder; a complete PlatformIO build configuration and dependency list have not yet been established.
 
 This repository documents a personal engineering prototype and its development status. It does not establish certified protective performance or suitability for deployment in an industrial installation.
 

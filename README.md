@@ -109,8 +109,8 @@ industrial-motor-monitor/
 │       ├── monitor-circuit.svg
 │       └── panel-illustration.svg
 ├── firmware/
-│   ├── main.prototype/
-│   │   └── main.prototype.ino
+│   └── main.prototype/
+│        └── main.prototype.ino
 │   └── platformio.ini
 └── hardware/
     └── photos/

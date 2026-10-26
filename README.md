@@ -34,7 +34,7 @@ The distinction between implemented features and future work is important: listi
 | Condition or feature | Status |
 |---|---|
 | Three-phase current measurement | Implemented in the prototype. Calibration against a reference is not yet documented |
-| Phase-voltage measurement | Implemented in the prototype. The scale factor is not yet calibrated; see Known Issues |
+| Phase-voltage measurement | Implemented in the prototype. The scale factor was checked at one voltage only; see Known Issues |
 | Overcurrent detection | Implemented in code. Limit is 150% of a per-pump full-load current set in the source |
 | Under/overvoltage detection | Implemented in code, not verified. Levels depend on the uncalibrated scale |
 | OLED operating and trip indications | Implemented, including the trip cause |
@@ -73,7 +73,7 @@ The firmware acquires sensor readings, evaluates the implemented protection cond
 
 The startup window is **5 seconds**. It opens when the firmware detects a motor start (a phase current above 0.5 A after the motor was off) and inhibits the overcurrent and imbalance checks only. It is a startup behavior, not a measured fault-response time.
 
-The overcurrent limit is 150% of `PUMP_FLA`, the pump's full-load current, which is set in the source for each pump (the committed value is 10 A, so 15 A). The voltage window is 150 V to 280 V, phase loss is a phase below 80 V while another is present, and imbalance is a phase current more than 25% from the average. Voltage and current values pass through a median over three passes. An overcurrent condition must persist for 500 ms. The voltage scale factor is still marked "calibrate later" in the code, so these voltage levels have not been validated.
+The overcurrent limit is 150% of `PUMP_FLA`, the pump's full-load current, which is set in the source for each pump (the committed value is 10 A, so 15 A). The voltage window is 150 V to 280 V, phase loss is a phase below 80 V while another is present, and imbalance is a phase current more than 25% from the average. Voltage and current values pass through a median over three passes. An overcurrent condition must persist for 500 ms. The voltage scale factor is still marked "calibrate later" in the code. It was compared with a multimeter at one point (235 V), not across the operating range, so these voltage levels have not been validated.
 
 On every trip, the cause is shown on the OLED and written to the serial port with a timestamp. The relay is held open until the display and ADC initialise, and an 8-second watchdog is armed after that.
 
@@ -96,6 +96,7 @@ industrial-motor-monitor/
 ├── README.md
 ├── LICENSE
 ├── docs/
+│   ├── README.md
 │   ├── hardware.md
 │   ├── assembly-notes.md
 │   ├── safety.md
@@ -110,13 +111,13 @@ industrial-motor-monitor/
 │       └── panel-illustration.svg
 ├── firmware/
 │   └── main.prototype/
-│        └── main.prototype.ino
-│   └── platformio.ini
+│       └── main.prototype.ino
 └── hardware/
     └── photos/
+        └── README.md
 ```
 
-The repository includes firmware, hardware documentation, photographs, schematics and illustrations, a requirements specification, and early project reports. A bill of materials has not been written yet.
+The repository includes firmware, hardware documentation, photographs, schematics and illustrations, a requirements specification, and early project reports. The bill of materials is in [`docs/hardware.md`](docs/hardware.md).
 
 ## Schematics
 
@@ -130,7 +131,7 @@ Based on the committed firmware, `firmware/main.prototype/main.prototype.ino`.
 
 | Issue | Effect |
 |---|---|
-| The voltage scale factor is not calibrated | Voltage readings are not volts until calibrated, so the 150 V, 280 V and 80 V levels are unvalidated |
+| The voltage scale factor was checked at one point only (235 V against a multimeter) | Accuracy across the range is unknown, so the 150 V, 280 V and 80 V levels are unvalidated |
 | The trip latch is held in RAM | A power cycle or watchdog reboot clears it and re-arms the relay |
 | Limits are compile-time constants, including the pump's full-load current | A different pump needs the constant changed and the board re-flashed |
 | Voltage and imbalance trips have no explicit confirmation time | Only the median over three passes filters short disturbances |
@@ -149,7 +150,9 @@ This repository documents a personal engineering prototype and its development s
 
 ## Testing
 
-Measured test results are not yet documented in this repository. A test log with measured values has not been written yet. `docs/challenges/build-challenges-and-lessons.md` describes the staged testing approach.
+Bench observations are recorded in [`docs/assembly-notes.md`](docs/assembly-notes.md): one voltage comparison with a multimeter (235 V on both) and three-phase current readings from a bandsaw (idle, running unloaded, cutting under load), compared qualitatively with a clamp meter. Exact reference readings were not kept, so no error figure is given. An attempted welder test was abandoned because of noise.
+
+No trip test, trip-time measurement or fail-safe test is documented, and the prototype has not been validated on the real pump panel.
 
 ## Safety notes
 

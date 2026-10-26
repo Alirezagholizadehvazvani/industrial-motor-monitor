@@ -122,9 +122,15 @@ Do not infer a safe contactor state from the GPIO logic alone.
 The prototype is powered from an ATX supply's fused 5 V rail.
 The recorded fuse rating is 1 A.
 
+## Photos
+
+Photos of the build are in `hardware/photos/`, with captions in
+`hardware/photos/README.md`.
+
 ## Not yet documented
 
-- Complete schematic and wiring details.
+- A verified as-built schematic. `docs/schematics/monitor-circuit.svg` is
+  an illustration drawn for the project, with unconfirmed assumptions
+  marked [A].
 - Verified relay-module specifications and contactor-control interface.
 - Verified input-protection design.
-- Photos of the breadboard build under `hardware/photos/`.

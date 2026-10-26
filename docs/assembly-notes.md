@@ -25,7 +25,7 @@ Each stage was brought up before the next one was added.
   noise was excessive; it did not establish successful operation with
   a welder.
 
-- **Pin fault:** One ESP32/Arduino-side pin was faulty. It was repaired
+- **Pin fault:** One ESP32-side pin was faulty. It was repaired
   by soldering. The exact pin and the original electrical fault were
   not recorded.
 
@@ -33,7 +33,7 @@ Each stage was brought up before the next one was added.
   10 kΩ resistors as a bias divider. The first assembly was incorrect
   and produced highly noisy current readings, described at the time as
   being in the 52 A range. The second attempt was still incorrect
-  because the return wire to the Arduino/ESP32 was missing, so no usable
+  because the return wire to the ESP32 was missing, so no usable
   data could be collected. The bias circuit was corrected on the final
   attempt. The exact target bias voltage and detailed measurements
   before and after the repair were not recorded.
@@ -90,6 +90,9 @@ a verified calibration result.
 - Current readings were compared qualitatively with a clamp meter, but
   exact reference readings were not retained.
 - The attempted welder test was abandoned because of excessive noise.
+- With the saw powered but not running, all three phases read about
+  1.5-1.6 A. That is above the firmware noise floor of 0.15 A. The
+  cause (noise, offset or a real load) has not been established.
 - These tests do not establish the protection system's trip accuracy,
   fail-safe behavior, long-term reliability, or suitability for a real
   pump panel.

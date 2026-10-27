@@ -48,10 +48,12 @@ person familiar with the actual installation.
 - No additional external input-protection components were present on
   the ZMPT101B outputs in the documented prototype. Module-internal
   protection has not been independently verified.
-- The relay module is described as opto-isolated, but its exact model,
-  contact rating, isolation specifications, and suitability for the
-  external control circuit have not been documented.
-- The contactor coil voltage has not been recorded.
+- The relay module is a TONGLING JQC-3FF-S-Z, described as opto-isolated,
+  with contacts marked 10 A 250 V AC and 15 A 125 V AC (printed markings,
+  reported). Its isolation specifications and its suitability for the
+  external control circuit have not been verified.
+- The contactor coil voltage is recorded as 220-240 V AC for the HGC 25. It has
+  not been re-verified.
 - The relay controls a separate contactor-control circuit; it is not
   documented as being directly connected to the contactor coil.
 - GPIO25 is driven LOW during initialization and on a detected fault,

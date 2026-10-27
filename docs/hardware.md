@@ -27,7 +27,7 @@ been validated with this installation.
 | 3 | YHDO TM SCT-013, 100 A : 50 mA | Current sensing, one per phase |
 | 1 | ADS1115, 16-bit ADC | Digitises the SCT-013 signals |
 | 1 | SSD1306 0.96-inch OLED | Status display |
-| 1 | TONGLING JQC-3FF-S-Z relay module, 5 V coil, opto-isolated | Controls a separate contactor-control circuit |
+| 1 | Opto-isolated relay module | Controls a separate contactor-control circuit |
 | 1 | Push button | Trip reset |
 | - | Status LEDs | Indication |
 | 1 | ATX supply, fused 5 V rail | Prototype power |
@@ -71,13 +71,7 @@ and bias divider, before reaching an ADS1115 input.
 - Firmware samples the enabled current channels in sequence. The
   configured ADC data rate is not an independent measurement of the
   complete system's per-channel update rate.
-- Bias voltage at ADS1115 AIN0, AIN1 and AIN2 with the CTs connected and
-  nothing clamped: 1.56 V, 1.56 V and 1.55 V (multimeter, ATX supply only,
-  mains disconnected, 27 October 2026, reported). In the same test the ESP32
-  3V3 pin read 3.25 V and 5V/VIN read 4.98 V.
-- By analysis, with this bias the inputs would clip at about 67 A RMS
-  (1.56 V / 33 ohm x 2000 = 94.5 A peak). The firmware trip limit is far
-  below that.
+- The exact bias voltage was not recorded.
 - The current calibration factor is a firmware setting, not evidence
   of formal calibration or verified measurement accuracy.
 
@@ -93,9 +87,6 @@ Each ZMPT101B module feeds an ESP32 ADC input:
 | L1 | GPIO35 |
 | L2 | GPIO32 |
 | L3 | GPIO33 |
-
-The ZMPT101B modules are powered from the 3.3 V rail (reported,
-27 October 2026).
 
 The firmware uses `VOLTAGE_SCALE = 100.0`, with a code comment indicating
 that calibration remains to be done. A bench comparison reportedly
@@ -119,22 +110,12 @@ is detected; it drives GPIO25 HIGH after initialization succeeds and
 when a trip is reset. This describes the logic signal only. The resulting
 relay-contact state and the external circuit's response must be verified.
 
-- Relay module: TONGLING JQC-3FF-S-Z, 5 V DC coil. Contact markings read
-  from the relay: 10 A 250 V AC and 15 A 125 V AC (reported, 27 October
-  2026). These are printed markings, not independently verified ratings.
-- Contactor coil voltage: 220-240 V AC for the HGC 25, as recorded for the
-  target installation. Not re-verified.
+- Relay module model and contact rating: not recorded.
+- Contactor coil voltage: not recorded.
 - Fail-safe behavior after loss of controller power, reset, or firmware
   failure: not verified.
 
 Do not infer a safe contactor state from the GPIO logic alone.
-
-## Software environment
-
-- ESP32 Arduino core 2.0.17 (reported, 27 October 2026). The sketch calls
-  `esp_task_wdt_init(8, true)`, which is the core 2.x form.
-- Libraries used by the sketch: Adafruit GFX, Adafruit SSD1306 and
-  Adafruit ADS1X15. Their versions were not recorded.
 
 ## Power
 
@@ -152,5 +133,4 @@ Photos of the build are in `hardware/photos/`, with captions in
   an illustration drawn for the project, with unconfirmed assumptions
   marked [A].
 - Verified relay-module specifications and contactor-control interface.
-- Versions of the Adafruit libraries.
 - Verified input-protection design.

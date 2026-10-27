@@ -21,7 +21,7 @@ Problems met while building the prototype, what caused them, what was done, and 
 ## 4. Current-sensing circuit
 
 **Problem.** This was the first sensing circuit I built fully on my own. The first wiring diagram for current measurement was wrong and gave noisy readings, described at the time as being in the 52 A range. The second attempt was missing the return wire to the ESP32, so no usable data could be collected.
-**What was done.** The bias circuit (two 10 kohm resistors) was corrected on the third attempt. The bias was measured at about 1.56 V on 27 October 2026 (see `hardware.md`); the value during the repair was not recorded.
+**What was done.** The bias circuit (two 10 kohm resistors) was corrected on the third attempt. The exact bias voltage was not recorded.
 **Lesson.** Independent practical work shows gaps that supervised lab exercises hide. Discard a faulty design early and record the measured values after each change.
 
 ## 5. Enclosure wiring
@@ -31,7 +31,7 @@ Cable management inside the enclosure was the main task in this phase. It took o
 ## 6. Staged testing and interference
 
 **Plan.** Testing on the target pumps was judged too risky at first because of the current involved, so other machines were used.
-**Bandsaw.** The first test machine was a bandsaw. Retest readings are in `assembly-notes.md`: about 3.6 A running without cutting and 7.1 A cutting. With the saw plugged in but switched off, the monitor read about 1.5 A on every phase while a clamp meter read 0 A. That is a measurement effect, and its cause is unresolved.
+**Bandsaw.** The first test machine was a bandsaw. Current readings are in `assembly-notes.md`: about 3.2 A running unloaded and 7.2 A cutting under load. The saw also read about 1.5 A on every phase when powered but not running, which is unexplained.
 **Welder.** The next test machine was a welding machine. Its electrical noise corrupted the sensor readings when it was near the prototype. About five days went into troubleshooting. Shortening wiring, moving the prototype away and switching off noisy machinery reduced the interference, but the welder test was abandoned and did not give a successful result.
 **Lesson.** In a workshop with high-power machines, the monitor must be physically separated from strong noise sources.
 

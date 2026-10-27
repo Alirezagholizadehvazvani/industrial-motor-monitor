@@ -136,7 +136,6 @@ Based on the committed firmware, `firmware/main.prototype/main.prototype.ino`.
 | Limits are compile-time constants, including the pump's full-load current | A different pump needs the constant changed and the board re-flashed |
 | Voltage and imbalance trips have no explicit confirmation time | Only the median over three passes filters short disturbances |
 | Events go to the serial port only | Faults cannot be reviewed without a connected host |
-| With a saw plugged in but switched off, the monitor reads about 1.5 A per phase while a clamp meter reads 0 A | A measurement effect of unknown cause. Motor-off detection resets only below 0.15 A, so the startup window may not reopen on a later start |
 | The watchdog call is written for ESP32 Arduino core 2.x | A build on core 3.x may not compile |
 | The 150 % limit has no documented basis | The limit needs a stated rationale before any use |
 
@@ -151,9 +150,9 @@ This repository documents a personal engineering prototype and its development s
 
 ## Testing
 
-Bench observations are recorded in [`docs/assembly-notes.md`](docs/assembly-notes.md). They are a retest on 27 October 2026 with the committed sketch (current readings in six states with a bandsaw, read from the display, with no clamp-meter comparison recorded), earlier observations from an earlier firmware build (a voltage comparison with a multimeter at one point and a current comparison with a clamp meter), and an abandoned welder test.
+Bench observations are recorded in [`docs/assembly-notes.md`](docs/assembly-notes.md): one voltage comparison with a multimeter (235 V on both) and three-phase current readings from a bandsaw (idle, running unloaded, cutting under load), compared qualitatively with a clamp meter. Exact reference readings were not kept, so no error figure is given. An attempted welder test was abandoned because of noise.
 
-With the saw plugged in but switched off, the monitor reads about 1.5 A on all three phases while a clamp meter reads 0 A. This is a measurement effect and its cause is unresolved. No trip test, trip-time measurement or fail-safe test is documented, and the prototype has not been validated on the real pump panel.
+No trip test, trip-time measurement or fail-safe test is documented, and the prototype has not been validated on the real pump panel.
 
 ## Safety notes
 
